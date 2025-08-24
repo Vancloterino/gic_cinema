@@ -1,0 +1,62 @@
+[project]
+name = "gic-cinema"
+version = "0.1.0"
+description = "Cinema booking system"
+authors = [
+    {name = "Vancloterino",email = "mdraidz@yahoo.com.sg"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pytest (>=8.4.1,<9.0.0)",
+    "black (>=25.1.0,<26.0.0)",
+    "pylint (>=3.3.8,<4.0.0)"
+]
+
+
+[tool.poetry]
+package-mode = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[project.optional-dependencies]
+dev = [
+  "black>=24.0.0",
+  "pylint>=3.2.0",
+  "pytest>=8.3.0",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+extend-exclude = '''
+/(
+  \.git
+| \.venv
+| build
+| dist
+| \.pytest_cache
+)/
+'''
+
+
+[tool.pylint.main]
+# Use the same line length as Black
+py-version = "3.11"
+load-plugins = []
+
+[tool.pylint.format]
+max-line-length = 88
+
+[tool.pylint.'MESSAGES CONTROL']
+# Keep this minimal; we’ll write proper docstrings.
+disable = [
+  "too-few-public-methods",   # dataclasses often trigger this
+  "missing-timeout",          # not relevant for this CLI
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
