@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from src.utils.seat_utils import (
+from src.core.seat_utils import (
     row_index_to_letter,
     row_letter_to_index,
     parse_seat_code,

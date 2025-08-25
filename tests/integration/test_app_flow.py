@@ -19,14 +19,16 @@ def _input_feeder(lines: List[str]) -> Iterator[str]:
         yield line
 
 
-def test_flow_book_accept_exit(monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]) -> None:
+def test_flow_book_accept_exit(
+    monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
     """Initialize, book 3 tickets (accept default), then exit."""
     inputs = [
         "Inception 2 4",  # init
-        "1",              # menu -> book
-        "3",              # ticket count
-        "",               # accept default selection
-        "3",              # exit
+        "1",  # menu -> book
+        "3",  # ticket count
+        "",  # accept default selection
+        "3",  # exit
     ]
     feeder = _input_feeder(inputs)
     monkeypatch.setattr("builtins.input", lambda _: next(feeder))
@@ -48,18 +50,20 @@ def test_flow_book_accept_exit(monkeypatch: pytest.MonkeyPatch, capfd: pytest.Ca
     assert "Thank you for using GIC Cinemas system. Bye!" in out
 
 
-def test_flow_book_reseat_check_exit(monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]) -> None:
+def test_flow_book_reseat_check_exit(
+    monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
     """Initialize, book 3 tickets, reseat from B02, check the booking, then exit."""
     inputs = [
         "Inception 2 4",  # init
-        "1",              # menu -> book
-        "3",              # ticket count
-        "B02",            # reseat starting at B02
-        "",               # accept updated selection
-        "2",              # menu -> check bookings
-        "GIC0001",        # check first booking
-        "",               # back to menu from check
-        "3",              # exit
+        "1",  # menu -> book
+        "3",  # ticket count
+        "B02",  # reseat starting at B02
+        "",  # accept updated selection
+        "2",  # menu -> check bookings
+        "GIC0001",  # check first booking
+        "",  # back to menu from check
+        "3",  # exit
     ]
     feeder = _input_feeder(inputs)
     monkeypatch.setattr("builtins.input", lambda _: next(feeder))

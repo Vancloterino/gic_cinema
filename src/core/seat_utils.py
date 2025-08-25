@@ -1,4 +1,4 @@
-"""Seat utility functions for conversions and validation."""
+"""Seat utilities for conversions, parsing, and validation."""
 
 from __future__ import annotations
 
@@ -11,11 +11,11 @@ from src.models.entities import Seat, Theater
 def row_index_to_letter(index: int) -> str:
     """Convert a zero-based row index to a row letter.
 
-    :param index: Row index (0-based, where 0 == A).
+    :param index: Row index in the range ``0..25`` (where 0 == ``A``).
     :type index: int
-    :return: Row letter.
+    :return: Row letter (``A``–``Z``).
     :rtype: str
-    :raises ValueError: If index is not in the range 0..25.
+    :raises ValueError: If index is outside ``0..25``.
     """
     if not (0 <= index < 26):
         raise ValueError("Row index must be between 0 and 25.")
@@ -25,11 +25,11 @@ def row_index_to_letter(index: int) -> str:
 def row_letter_to_index(letter: str) -> int:
     """Convert a row letter to a zero-based row index.
 
-    :param letter: Row letter (A–Z).
+    :param letter: Row letter (``A``–``Z``), case-insensitive.
     :type letter: str
-    :return: Zero-based index.
+    :return: Zero-based row index.
     :rtype: int
-    :raises ValueError: If *letter* is not a single character in A–Z.
+    :raises ValueError: If *letter* is not exactly one character in ``A``–``Z``.
     """
     if letter is None:
         raise ValueError("Row letter must be a single character A–Z.")
@@ -42,11 +42,11 @@ def row_letter_to_index(letter: str) -> int:
 def parse_seat_code(code: str) -> Seat:
     """Parse a seat code like ``B03`` into a :class:`Seat`.
 
-    :param code: Seat code string.
+    :param code: Seat code string with format ``<RowLetter><2-digit column>``.
     :type code: str
-    :return: Seat object.
+    :return: Parsed seat.
     :rtype: Seat
-    :raises ValueError: If format is invalid.
+    :raises ValueError: If the code is empty or malformed.
     """
     if not code:
         raise ValueError("Seat code cannot be empty.")
@@ -67,26 +67,26 @@ def parse_seat_code(code: str) -> Seat:
 
 
 def format_seat_code(row: int, col: int) -> str:
-    """Format a seat code from row index and col.
+    """Format a seat code from zero-based *row* and one-based *col*.
 
-    :param row: Row index (0-based).
+    :param row: Zero-based row index.
     :type row: int
-    :param col: Column index (1-based).
+    :param col: One-based column index (``>= 1``).
     :type col: int
-    :return: Seat code string.
+    :return: Seat code like ``A01``.
     :rtype: str
     """
     return f"{row_index_to_letter(row)}{col:02d}"
 
 
 def seat_in_bounds(theater: Theater, seat: Seat) -> bool:
-    """Return whether *seat* lies within the dimensions of *theater*.
+    """Return whether the seat is within the theater dimensions.
 
-    :param theater: Theater to check against.
+    :param theater: Theater descriptor.
     :type theater: Theater
-    :param seat: Seat coordinate.
+    :param seat: Seat coordinate to check.
     :type seat: Seat
-    :return: ``True`` if in bounds, else ``False``.
+    :return: ``True`` if seat is within bounds.
     :rtype: bool
     """
     row_idx = row_letter_to_index(seat.row)
@@ -94,13 +94,13 @@ def seat_in_bounds(theater: Theater, seat: Seat) -> bool:
 
 
 def seat_is_free(theater: Theater, seat: Seat) -> bool:
-    """Return whether *seat* is currently unoccupied.
+    """Return whether the seat is currently unoccupied.
 
-    :param theater: Theater to check against.
+    :param theater: Theater descriptor.
     :type theater: Theater
-    :param seat: Seat coordinate.
+    :param seat: Seat coordinate to check.
     :type seat: Seat
-    :return: ``True`` if empty, else ``False``.
+    :return: ``True`` if the seat is empty.
     :rtype: bool
     """
     row_idx = row_letter_to_index(seat.row)

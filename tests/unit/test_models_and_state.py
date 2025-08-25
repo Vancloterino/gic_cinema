@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from src.models.entities import Seat, Booking, Theater
-from src.state.context import AppContext
+from src.models.context import AppContext
 
 
 def test_seat_code_zero_pad() -> None:
@@ -19,7 +19,7 @@ def test_booking_dataclass_defaults() -> None:
 
 def test_theater_capacity_and_available() -> None:
     t = Theater(title="Inception", rows=3, cols=4)
-    assert t.capacity == 12
+    assert t.capacity() == 12
     assert t.available() == 12
 
     # occupy a couple of seats

@@ -39,7 +39,7 @@ def render_seat_map(
     :return: Multi-line string suitable for printing to console.
     :rtype: str
     """
-    # Precompute a set for quick membership when previewing seats.
+    # Precompute a set for quick membership when previewing seats. {'A04', 'A06', 'A05', 'A07'}
     preview_codes = {s.row.upper() + f"{s.col:02d}" for s in preview_seats or []}
 
     lines: list[str] = []

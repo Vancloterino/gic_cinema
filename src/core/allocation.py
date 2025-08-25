@@ -1,115 +1,154 @@
-"""Seat allocation algorithms for bookings."""
+"""Seat allocation algorithms (auto and manual).
+
+Current behavior
+----------------
+- **Auto allocation** selects seats row-by-row from row ``A`` upward.
+  Within a row, it prefers columns **closest to center** using a specific
+  center-outwards order. Occupied seats are skipped.
+- **Manual allocation** starts at a user-provided seat and fills
+  **rightward contiguously** in that row, then overflows to subsequent rows
+  using the same per-row center-outwards order.
+
+These functions are pure (no I/O) and do not mutate the theater grid.
+"""
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import List, Optional
 
 from src.models.entities import Theater, Seat
-from src.utils.seat_utils import row_index_to_letter
+from src.core.seat_utils import row_letter_to_index
 
 
-def center_col_order(cols: int) -> list[int]:
-    """Return seat column indices in center-outward order.
+def center_col_order(cols: int) -> List[int]:
+    """Return the preferred column order from center outwards.
 
-    For example, with 10 seats: [5, 6, 4, 7, 3, 8, 2, 9, 1, 10].
+    Examples
+    --------
+    - ``cols = 6`` → ``[3, 4, 2, 5, 1, 6]``
+    - ``cols = 5`` → ``[3, 2, 4, 1, 5]``
 
-    :param cols: Number of seats in the row.
+    :param cols: Number of seats per row.
     :type cols: int
-    :return: List of column numbers in allocation order.
+    :return: Column indices in preferred order (1-based).
     :rtype: list[int]
     """
-    mid_left = (cols // 2)
-    mid_right = mid_left + 1 if cols % 2 == 0 else mid_left + 1
+    if cols <= 0:
+        return []
 
-    order: list[int] = []
-    left, right = mid_left, mid_right
-
-    if cols % 2 == 1:
-        order.append(mid_left + 1)
-        left, right = mid_left, mid_left + 2
+    order: List[int] = []
+    if cols % 2 == 0:
+        left = cols // 2
+        right = left + 1
+        order.extend([left, right])
+        left -= 1
+        right += 1
+        while left >= 1 or right <= cols:
+            if left >= 1:
+                order.append(left)
+                left -= 1
+            if right <= cols:
+                order.append(right)
+                right += 1
     else:
-        order.extend([mid_left, mid_right])
-        left, right = mid_left - 1, mid_right + 1
-
-    while left >= 1 or right <= cols:
-        if left >= 1:
-            order.append(left)
-            left -= 1
-        if right <= cols:
-            order.append(right)
-            right += 1
-
+        center = (cols + 1) // 2
+        order.append(center)
+        offset = 1
+        while len(order) < cols:
+            if center - offset >= 1:
+                order.append(center - offset)
+            if center + offset <= cols:
+                order.append(center + offset)
+            offset += 1
     return order
 
 
-def auto_allocate(theater: Theater, k: int) -> Optional[list[Seat]]:
-    """Allocate seats automatically using default rules.
+def auto_allocate(theater: Theater, k: int) -> Optional[List[Seat]]:
+    """Allocate ``k`` seats using center-outwards preference per row.
 
-    Rules
-    -----
-    1. Start from the furthest row from the screen (row A).
-    2. Within a row, pick seats in center-outward order.
-    3. If row cannot fit all, overflow to next row.
-
-    :param theater: Theater object.
+    :param theater: Theater context (grid is inspected, not mutated).
     :type theater: Theater
     :param k: Number of seats requested.
     :type k: int
-    :return: List of allocated seats, or ``None`` if insufficient capacity.
+    :return: Proposed seats or ``None`` if insufficient capacity.
     :rtype: Optional[list[Seat]]
     """
+    if k <= 0:
+        return []
     if k > theater.available():
         return None
 
-    seats: list[Seat] = []
+    proposed: List[Seat] = []
+    needed = k
+
     for row_idx in range(theater.rows):
-        cols_order = center_col_order(theater.cols)
-        for col in cols_order:
+        if needed == 0:
+            break
+        row_letter = chr(ord("A") + row_idx)
+        order = center_col_order(theater.cols)
+        for col in order:
             if theater.grid[row_idx][col - 1] is None:
-                seats.append(Seat(row=chr(ord("A") + row_idx), col=col))
-                if len(seats) == k:
-                    return seats
-    return None
+                proposed.append(Seat(row=row_letter, col=col))
+                needed -= 1
+                if needed == 0:
+                    break
+
+    return proposed if needed == 0 else None
 
 
-def manual_allocate(theater: Theater, k: int, start: Seat) -> Optional[list[Seat]]:
-    """Allocate seats starting from a user-specified seat.
+def manual_allocate(theater: Theater, k: int, start: Seat) -> Optional[List[Seat]]:
+    """Allocate seats starting from *start* seat, then overflow to next rows.
 
-    Rules
-    -----
-    - Fill to the right within the same row.
-    - If insufficient seats, overflow to the next row closer to the screen,
-      using default center-outward order.
+    Strategy
+    --------
+    1. In the start row, take a contiguous **rightward** block beginning at
+       ``start.col`` until either the row ends, a seat is occupied, or ``k``
+       seats are gathered.
+    2. If seats remain, overflow to subsequent rows using
+       :func:`center_col_order`.
 
-    :param theater: Theater object.
+    :param theater: Theater context (grid is inspected, not mutated).
     :type theater: Theater
     :param k: Number of seats requested.
     :type k: int
-    :param start: Starting seat provided by user.
+    :param start: Starting seat (assumed valid and free by caller).
     :type start: Seat
-    :return: List of allocated seats, or ``None`` if not possible.
+    :return: Proposed seats or ``None`` if insufficient capacity.
     :rtype: Optional[list[Seat]]
     """
+    if k <= 0:
+        return []
     if k > theater.available():
         return None
 
-    seats: list[Seat] = []
-    row_idx = ord(start.row.upper()) - ord("A")
+    proposed: List[Seat] = []
+    needed = k
+    start_row = row_letter_to_index(start.row)
 
-    # Phase 1: same row to the right
-    for col in range(start.col, theater.cols + 1):
-        if theater.grid[row_idx][col - 1] is None:
-            seats.append(Seat(row=start.row.upper(), col=col))
-            if len(seats) == k:
-                return seats
+    # Phase 1: same row, rightward contiguous seats
+    col = start.col
+    while col <= theater.cols and needed > 0:
+        if theater.grid[start_row][col - 1] is None:
+            proposed.append(Seat(row=start.row.upper(), col=col))
+            needed -= 1
+        else:
+            break
+        col += 1
 
-    # Phase 2: overflow to next rows
-    for next_row in range(row_idx + 1, theater.rows):
-        cols_order = center_col_order(theater.cols)
-        for col in cols_order:
-            if theater.grid[next_row][col - 1] is None:
-                seats.append(Seat(row=chr(ord("A") + next_row), col=col))
-                if len(seats) == k:
-                    return seats
+    if needed == 0:
+        return proposed
 
-    return None
+    # Phase 2: overflow rows with center-outwards preference
+    for row_idx in range(start_row + 1, theater.rows):
+        if needed == 0:
+            break
+        row_letter = chr(ord("A") + row_idx)
+        order = center_col_order(theater.cols)
+        for c in order:
+            if theater.grid[row_idx][c - 1] is None:
+                proposed.append(Seat(row=row_letter, col=c))
+                needed -= 1
+                if needed == 0:
+                    break
+
+    return proposed if needed == 0 else None

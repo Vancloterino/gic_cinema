@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-from typing import Callable
+from __future__ import annotations
 
 import pytest
 
-from src.models.entities import Theater, Seat  # noqa: E402
-from src.state.context import AppContext  # noqa: E402
+from src.models.entities import Theater
+from src.models.context import AppContext
+from src.core.renderers.ascii_renderer import AsciiRenderer
+from src.core.services.booking import BookingService
 
 
 @pytest.fixture()
@@ -18,23 +18,47 @@ def theater_4x6() -> Theater:
     return Theater(title="Inception", rows=4, cols=6)
 
 
-@pytest.fixture()
-def app_context_empty(theater_4x6: Theater) -> AppContext:
-    """Empty application context with a fresh theater."""
-    return AppContext(theater=theater_4x6)
+class ScriptIO:
+    """Tiny scripted IO for command tests."""
+
+    def __init__(self, inputs: list[str]) -> None:
+        self._inputs = list(inputs)
+        self.outputs: list[str] = []
+
+    def prompt(self, text: str) -> str:
+        self.outputs.append(text)
+        return self._inputs.pop(0) if self._inputs else ""
+
+    def write(self, text: str) -> None:
+        self.outputs.append(text)
+
+    def newline(self) -> None:
+        self.outputs.append("\n")
 
 
-@pytest.fixture()
-def occupy() -> Callable[[Theater, list[Seat], str], None]:
-    """Utility to mark seats as booked in the grid.
+@pytest.fixture
+def theater_3x5() -> Theater:
+    return Theater(title="Demo", rows=3, cols=5)
 
-    :return: Function that takes (theater, seats, booking_id) and mutates grid.
-    :rtype: Callable
-    """
 
-    def _occupy(theater: Theater, seats: list[Seat], booking_id: str) -> None:
-        for s in seats:
-            row_idx = ord(s.row.upper()) - ord("A")
-            theater.grid[row_idx][s.col - 1] = booking_id
+@pytest.fixture
+def ctx_empty(theater_3x5: Theater) -> AppContext:
+    return AppContext(theater=theater_3x5)
 
-    return _occupy
+
+@pytest.fixture
+def renderer() -> AsciiRenderer:
+    return AsciiRenderer()
+
+
+@pytest.fixture
+def service() -> BookingService:
+    return BookingService()
+
+
+@pytest.fixture
+def script_io_factory():
+    def _make(inputs: list[str]) -> ScriptIO:
+        return ScriptIO(inputs)
+
+    return _make

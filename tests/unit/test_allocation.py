@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from src.core.allocation import center_col_order, auto_allocate, manual_allocate
 from src.models.entities import Seat, Theater
 

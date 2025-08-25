@@ -1,18 +1,18 @@
-"""Domain entities for the GIC Cinemas booking system."""
+"""Domain entities (dataclasses)."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import List, Optional
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(slots=True)
 class Seat:
-    """Represents a single seat coordinate in the theater.
+    """A seat coordinate.
 
-    :param row: Row letter (``A``..``Z``).
+    :param row: Row letter (``A``–``Z``).
     :type row: str
-    :param col: Seat number within the row (1-based).
+    :param col: One-based column index.
     :type col: int
     """
 
@@ -20,64 +20,61 @@ class Seat:
     col: int
 
     def code(self) -> str:
-        """Return the seat code in standard form (e.g., ``B03``).
+        """Return the seat code as ``<Row><2-digit Col>`` (e.g., ``A03``).
 
-        :return: Seat code with zero-padded column.
+        :return: Formatted seat code.
         :rtype: str
         """
-        return f"{self.row}{self.col:02d}"
+        return f"{self.row.upper()}{self.col:02d}"
 
 
 @dataclass(slots=True)
 class Booking:
-    """Represents a booking record.
+    """A confirmed booking.
 
     :param booking_id: Unique booking identifier (e.g., ``GIC0001``).
     :type booking_id: str
-    :param seats: List of seats reserved in this booking.
+    :param seats: Seats reserved by this booking.
     :type seats: list[Seat]
     """
 
     booking_id: str
-    seats: list[Seat] = field(default_factory=list)
+    seats: List[Seat] = field(default_factory=list)
 
 
 @dataclass(slots=True)
 class Theater:
-    """Represents the theater configuration and current occupancy.
+    """A single-screen theater layout and occupancy grid.
 
-    :param title: Movie title for the current show.
+    :param title: Film title for the current screening.
     :type title: str
     :param rows: Number of seating rows.
     :type rows: int
     :param cols: Number of seats per row.
     :type cols: int
-    :param grid: 2D structure where ``None`` means empty, otherwise stores the
-                 booking ID of the occupant.
-    :type grid: list[list[Optional[str]]]
     """
 
     title: str
     rows: int
     cols: int
-    grid: list[list[Optional[str]]] = field(init=False)
+    grid: List[List[Optional[str]]] = field(init=False)
 
     def __post_init__(self) -> None:
+        """Initialize the occupancy grid as an ``rows × cols`` matrix of ``None``."""
         self.grid = [[None for _ in range(self.cols)] for _ in range(self.rows)]
 
-    @property
     def capacity(self) -> int:
-        """Return the total number of seats in the theater.
+        """Return the total number of seats.
 
-        :return: Theater capacity.
+        :return: ``rows * cols``.
         :rtype: int
         """
         return self.rows * self.cols
 
     def available(self) -> int:
-        """Return the number of currently available (empty) seats.
+        """Return the number of currently unoccupied seats.
 
-        :return: Number of available seats.
+        :return: Count of seats with ``None`` in the grid.
         :rtype: int
         """
-        return sum(cell is None for row in self.grid for cell in row)
+        return sum(1 for r in self.grid for c in r if c is None)
