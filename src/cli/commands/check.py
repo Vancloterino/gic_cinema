@@ -1,7 +1,5 @@
 """Check bookings command."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from src.cli.command import Command, CommandMeta, IO

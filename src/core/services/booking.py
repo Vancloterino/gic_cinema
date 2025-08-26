@@ -1,10 +1,4 @@
-"""Booking service: preview and commit operations.
-
-This module centralizes seat allocation previews and grid mutations so
-commands remain thin and easy to test.
-"""
-
-from __future__ import annotations
+"""Booking service: preview and commit operations."""
 
 from typing import Iterable, Optional
 

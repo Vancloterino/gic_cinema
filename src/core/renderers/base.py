@@ -1,7 +1,5 @@
 """Renderer protocol."""
 
-from __future__ import annotations
-
 from typing import Iterable, Optional, Protocol
 
 from src.models.entities import Seat, Theater

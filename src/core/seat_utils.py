@@ -1,9 +1,6 @@
 """Seat utilities for conversions, parsing, and validation."""
 
-from __future__ import annotations
-
 import string
-from typing import Optional
 
 from src.models.entities import Seat, Theater
 

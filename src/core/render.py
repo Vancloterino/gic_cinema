@@ -1,7 +1,5 @@
 """ASCII rendering utilities for the seating map."""
 
-from __future__ import annotations
-
 from typing import Iterable, Optional
 
 from src.models.entities import Theater, Seat

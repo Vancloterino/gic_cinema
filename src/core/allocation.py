@@ -1,18 +1,4 @@
-"""Seat allocation algorithms (auto and manual).
-
-Current behavior
-----------------
-- **Auto allocation** selects seats row-by-row from row ``A`` upward.
-  Within a row, it prefers columns **closest to center** using a specific
-  center-outwards order. Occupied seats are skipped.
-- **Manual allocation** starts at a user-provided seat and fills
-  **rightward contiguously** in that row, then overflows to subsequent rows
-  using the same per-row center-outwards order.
-
-These functions are pure (no I/O) and do not mutate the theater grid.
-"""
-
-from __future__ import annotations
+"""Seat allocation algorithms (auto and manual)."""
 
 from typing import List, Optional
 

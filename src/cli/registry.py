@@ -1,9 +1,4 @@
-"""Command registry.
-
-This module centralizes construction and ordering of CLI commands.
-"""
-
-from __future__ import annotations
+"""Command registry."""
 
 from typing import List
 

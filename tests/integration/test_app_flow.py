@@ -3,14 +3,12 @@
 These tests simulate keyboard input and assert on printed output.
 """
 
-from __future__ import annotations
-
 import re
 from typing import Iterator, List
 
 import pytest
 
-from src.app import main
+from src.app import run_app
 
 
 def _input_feeder(lines: List[str]) -> Iterator[str]:
@@ -34,7 +32,7 @@ def test_flow_book_accept_exit(
     monkeypatch.setattr("builtins.input", lambda _: next(feeder))
 
     with pytest.raises(SystemExit) as ei:
-        main()
+        run_app()
     assert ei.value.code == 0
 
     out = capfd.readouterr().out
@@ -69,7 +67,7 @@ def test_flow_book_reseat_check_exit(
     monkeypatch.setattr("builtins.input", lambda _: next(feeder))
 
     with pytest.raises(SystemExit) as ei:
-        main()
+        run_app()
     assert ei.value.code == 0
 
     out = capfd.readouterr().out

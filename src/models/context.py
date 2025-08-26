@@ -1,7 +1,5 @@
 """Application context (in-memory state)."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Dict
 

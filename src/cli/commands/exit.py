@@ -1,7 +1,5 @@
 """Exit command."""
 
-from __future__ import annotations
-
 from src.cli.command import Command, CommandMeta, IO
 from src.models.context import AppContext
 

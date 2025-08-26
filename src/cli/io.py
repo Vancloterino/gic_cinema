@@ -1,8 +1,5 @@
 """Console I/O implementation."""
 
-from __future__ import annotations
-
-
 class ConsoleIO:
     """Console-backed IO adapter using :func:`input` and :func:`print`."""
 

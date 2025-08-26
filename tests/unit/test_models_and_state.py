@@ -1,7 +1,3 @@
-"""Unit tests for models (Seat, Booking, Theater) and state (AppContext)."""
-
-from __future__ import annotations
-
 from src.models.entities import Seat, Booking, Theater
 from src.models.context import AppContext
 

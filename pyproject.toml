@@ -33,15 +33,6 @@ dev = [
 [tool.black]
 line-length = 88
 target-version = ["py311"]
-extend-exclude = '''
-/(
-  \.git
-| \.venv
-| build
-| dist
-| \.pytest_cache
-)/
-'''
 
 
 [tool.pylint.main]
@@ -64,8 +55,8 @@ pythonpath = ["."]
 
 [tool.coverage.run]
 branch = true
-source = ["src"]          # ← measure ONLY code under src/
+source = ["src"]
 omit = [
-  "tests/*",              # ← don't measure tests if they get imported
+  "tests/*",
   "*/tests/*",
 ]

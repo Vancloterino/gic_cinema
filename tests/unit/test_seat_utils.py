@@ -1,7 +1,3 @@
-"""Unit tests for seat utilities (row/col conversions, parsing, formatting)."""
-
-from __future__ import annotations
-
 import pytest
 
 from src.core.seat_utils import (

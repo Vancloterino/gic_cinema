@@ -1,8 +1,3 @@
-"""Domain-level exceptions for the booking system."""
-
-from __future__ import annotations
-
-
 class DomainError(Exception):
     """Base class for domain errors."""
 

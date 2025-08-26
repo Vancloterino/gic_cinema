@@ -1,7 +1,3 @@
-"""Unit tests for ASCII rendering of seat maps."""
-
-from __future__ import annotations
-
 from src.core.renderers.ascii_renderer import AsciiRenderer
 from src.models.entities import Seat, Theater
 

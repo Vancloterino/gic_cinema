@@ -1,7 +1,3 @@
-"""Unit tests for seat allocation algorithms."""
-
-from __future__ import annotations
-
 from src.core.allocation import center_col_order, auto_allocate, manual_allocate
 from src.models.entities import Seat, Theater
 

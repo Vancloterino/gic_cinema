@@ -1,7 +1,5 @@
 """ASCII renderer for seat maps."""
 
-from __future__ import annotations
-
 from typing import Iterable, Optional
 
 from src.core.renderers.base import Renderer

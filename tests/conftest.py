@@ -1,9 +1,3 @@
-"""Global pytest fixtures for the GIC Cinemas project."""
-
-from __future__ import annotations
-
-from __future__ import annotations
-
 import pytest
 
 from src.models.entities import Theater

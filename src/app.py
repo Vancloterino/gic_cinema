@@ -6,8 +6,6 @@ and routes user input to the selected command.
 All functions and classes here avoid business logic; they are orchestration only.
 """
 
-from __future__ import annotations
-
 from typing import Dict, List
 
 from src.cli.command import Command, IO
@@ -36,7 +34,7 @@ def _render_menu(commands: List[Command], ctx: AppContext, io: IO) -> None:
         io.write(cmd.display_label(ctx))
 
 
-def main() -> None:
+def run_app() -> None:
     """Program entry point.
 
     - Prompt user for ``[Title] [Rows] [SeatsPerRow]``.
