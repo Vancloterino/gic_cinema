@@ -92,6 +92,7 @@ poetry install
 
 Run the ETL pipeline
 ```bash
+source .venv/Scripts/activate
 python run_booking_system.py
 ```
 
