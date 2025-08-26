@@ -22,13 +22,6 @@ def test_validate_start_seat_out_of_bounds() -> None:
         validate_start_seat(t, Seat("A", 5))  # col out of bounds
 
 
-def test_validate_start_seat_already_taken() -> None:
-    t = Theater(title="Inception", rows=2, cols=4)
-    t.grid[0][0] = "GIC9999"  # A01 occupied
-    with pytest.raises(ValueError):
-        validate_start_seat(t, Seat("A", 1))
-
-
 def test_parse_init_line_basic() -> None:
     title, rows, cols = parse_init_line("Inception 8 10")
     assert title == "Inception"

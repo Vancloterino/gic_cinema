@@ -63,3 +63,16 @@ def test_allocate_insufficient_capacity_returns_none() -> None:
     t.grid[0][2] = "GIC0001"
     assert auto_allocate(t, 2) is None
     assert manual_allocate(t, 2, Seat("A", 1)) is None
+
+def test_manual_allocate_scans_right_skipping_taken() -> None:
+    t = Theater("Film", rows=2, cols=10)
+    # Mark some seats in B row as taken: B03..B06
+    t.grid[1][2] = "X"  # B03
+    t.grid[1][3] = "X"  # B04
+    t.grid[1][4] = "X"  # B05
+    t.grid[1][5] = "X"  # B06
+    # Start at B05
+    # Expect it to pick B07, B08 for k=2 (scan right, skip taken, don't jump to C row)
+    seats = manual_allocate(t, 2, Seat("B", 5))
+    assert seats is not None
+    assert [s.code() for s in seats] == ["B07", "B08"]

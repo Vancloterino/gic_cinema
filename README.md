@@ -16,21 +16,12 @@ A small, testable **console booking app** demonstrating seat allocation, manual 
 * Models: minimal dataclasses (Seat, Booking, Theater) and AppContext for state.
 * reST docstrings format for future Sphinx/doc builds.
 
-**Assumptions**
+**Assumptions** $$TBD
 
 * One screen per run; rectangular grid.
 * Row A rendered at the bottom; “SCREEN” at top.
 * Auto allocation uses center-outwards priority per row; manual reseat starts from the chosen seat rightwards.
-* Booking IDs: GIC0001, GIC0002, … monotonic per session.
 * In-memory single-user session; no persistence or concurrency.
-
-**➕ Adding a new CLI option**
-
-* Create a new command in src/cli/commands/`<new_command>`.py:
-* Subclass Command, define meta, implement display_label() and run().
-* Use injected renderer/service (get from get_commands()).
-* Register it in src/cli/registry.py in the return list.
-* Add focused unit tests with a scripted IO (see ScriptIO in tests/conftest.py).
 
 
 ---

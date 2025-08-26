@@ -87,11 +87,11 @@ def manual_allocate(theater: Theater, k: int, start: Seat) -> Optional[List[Seat
 
     Strategy
     --------
-    1. In the start row, take a contiguous **rightward** block beginning at
-       ``start.col`` until either the row ends, a seat is occupied, or ``k``
-       seats are gathered.
-    2. If seats remain, overflow to subsequent rows using
-       :func:`center_col_order`.
+    1. In the **start row**, scan **rightwards** from ``start.col`` to the end,
+       **collecting any free seats** (do **not** stop at the first occupied seat).
+       This matches the “flow to the right” behavior in the requirements.
+    2. If seats still remain, overflow to subsequent rows using
+       :func:`center_col_order` (unchanged).
 
     :param theater: Theater context (grid is inspected, not mutated).
     :type theater: Theater
@@ -117,8 +117,6 @@ def manual_allocate(theater: Theater, k: int, start: Seat) -> Optional[List[Seat
         if theater.grid[start_row][col - 1] is None:
             proposed.append(Seat(row=start.row.upper(), col=col))
             needed -= 1
-        else:
-            break
         col += 1
 
     if needed == 0:

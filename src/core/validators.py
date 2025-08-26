@@ -4,7 +4,7 @@ import re
 from typing import Tuple
 
 from src.models.entities import Seat, Theater
-from src.core.seat_utils import seat_in_bounds, seat_is_free
+from src.core.seat_utils import seat_in_bounds
 
 
 def parse_init_line(line: str) -> Tuple[str, int, int]:
@@ -93,5 +93,3 @@ def validate_start_seat(theater: Theater, seat: Seat) -> None:
     """
     if not seat_in_bounds(theater, seat):
         raise ValueError("Seat is out of bounds for this theater.")
-    if not seat_is_free(theater, seat):
-        raise ValueError("Selected seat is already taken. Choose another seat.")

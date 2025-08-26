@@ -88,19 +88,3 @@ def seat_in_bounds(theater: Theater, seat: Seat) -> bool:
     """
     row_idx = row_letter_to_index(seat.row)
     return 0 <= row_idx < theater.rows and 1 <= seat.col <= theater.cols
-
-
-def seat_is_free(theater: Theater, seat: Seat) -> bool:
-    """Return whether the seat is currently unoccupied.
-
-    :param theater: Theater descriptor.
-    :type theater: Theater
-    :param seat: Seat coordinate to check.
-    :type seat: Seat
-    :return: ``True`` if the seat is empty.
-    :rtype: bool
-    """
-    row_idx = row_letter_to_index(seat.row)
-    if not (0 <= row_idx < theater.rows) or not (1 <= seat.col <= theater.cols):
-        return False
-    return theater.grid[row_idx][seat.col - 1] is None

@@ -1,5 +1,6 @@
 """Console I/O implementation."""
 
+
 class ConsoleIO:
     """Console-backed IO adapter using :func:`input` and :func:`print`."""
 
