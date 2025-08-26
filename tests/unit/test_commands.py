@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import pytest
+
 from src.cli.commands.book import BookCommand
 from src.cli.commands.check import CheckCommand
+from src.cli.commands.exit import ExitCommand
 from src.core.services.booking import BookingService
 from src.core.renderers.ascii_renderer import AsciiRenderer
 from src.models.context import AppContext
@@ -39,3 +42,23 @@ def test_check_command_renders_when_found(script_io_factory) -> None:
 
     # Should have printed some ASCII map lines (e.g., SCREEN divider)
     assert any("S C R E E N" in out for out in io.outputs)
+
+
+def test_exit_display_label() -> None:
+    ctx = AppContext(theater=Theater("Film", 1, 1))
+    cmd = ExitCommand()
+    assert cmd.display_label(ctx).startswith("[3] Exit")
+
+
+def test_exit_command_exits_with_message(script_io_factory) -> None:
+    io = script_io_factory([])  # ExitCommand doesn't prompt
+    ctx = AppContext(theater=Theater("Film", 1, 1))
+    cmd = ExitCommand()
+
+    with pytest.raises(SystemExit) as excinfo:
+        cmd.run(ctx, io)
+
+    assert excinfo.value.code == 0
+    assert any(
+        "Thank you for using GIC Cinemas system. Bye!" in out for out in io.outputs
+    )
